@@ -1,23 +1,37 @@
 <template>
-  <div v-if="!usersStore.profile" class="min-h-screen flex items-center justify-center bg-slate-50">
-    <div class="flex flex-col items-center gap-3">
-      <div class="w-10 h-10 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+  <main
+    v-if="!usersStore.profile"
+    class="min-h-screen flex items-center justify-center bg-slate-50"
+  >
+    <div
+      role="status"
+      aria-live="polite"
+      class="flex flex-col items-center gap-3"
+    >
+      <div
+        class="w-10 h-10 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"
+        aria-hidden="true"
+      />
       <p class="text-sm font-medium text-slate-600">Memuat sesi pengguna...</p>
     </div>
-  </div>
+  </main>
 
   <div v-else class="min-h-screen bg-slate-50 text-slate-800">
-    <NavbarComponent
-      :profile="usersStore.profile"
-      :is-sidebar-open="isSidebarOpen"
-      @logout="handleLogout"
-      @toggle-sidebar="isSidebarOpen = !isSidebarOpen"
-    />
+    <header>
+      <NavbarComponent
+        :profile="usersStore.profile"
+        :is-sidebar-open="isSidebarOpen"
+        @logout="handleLogout"
+        @toggle-sidebar="isSidebarOpen = !isSidebarOpen"
+      />
+    </header>
 
-    <SidebarComponent
-      :is-sidebar-open="isSidebarOpen"
-      @close-mobile="isSidebarOpen = false"
-    />
+    <aside>
+      <SidebarComponent
+        :is-sidebar-open="isSidebarOpen"
+        @close-mobile="isSidebarOpen = false"
+      />
+    </aside>
 
     <main class="pt-16 md:pl-64 transition-all">
       <div class="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">

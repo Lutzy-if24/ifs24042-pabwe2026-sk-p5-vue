@@ -1,8 +1,13 @@
 <template>
-  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm" role="dialog" aria-modal="true">
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="add-aucation-title"
+  >
     <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
       <div class="flex items-center justify-between px-5 py-4 border-b border-slate-100">
-        <h2 class="text-lg font-bold text-slate-900">Tambah Lelang</h2>
+        <h2 id="add-aucation-title" class="text-lg font-bold text-slate-900">Tambah Lelang</h2>
         <button type="button" @click="$emit('close')" class="p-1 rounded-lg text-slate-400 hover:bg-slate-100" aria-label="Tutup">
           <X :size="20" />
         </button>
@@ -22,8 +27,10 @@
         </div>
 
         <div>
-          <label for="add-desc" class="block text-sm font-medium text-slate-700 mb-1">Deskripsi</label>
-          <MarkdownEditor id="add-desc" v-model="description" />
+          <label id="add-desc-label" for="add-desc" class="block text-sm font-medium text-slate-700 mb-1">Deskripsi</label>
+          <div role="group" aria-labelledby="add-desc-label">
+            <MarkdownEditor id="add-desc" v-model="description" />
+          </div>
         </div>
 
         <div>

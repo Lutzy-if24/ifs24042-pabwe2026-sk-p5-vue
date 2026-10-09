@@ -78,50 +78,103 @@ describe("aucationsStore", () => {
   it("asyncSetIsAucationAdd fail", async () => {
     aucationApi.addAucation.mockRejectedValue(new Error("err"));
     const store = useAucationsStore();
+    store.isAucationAdded = true;
     await store.asyncSetIsAucationAdd({ title: "t" });
     expect(toolsHelper.showErrorDialog).toHaveBeenCalledWith("err");
     expect(store.isAucationAdded).toBe(false);
+    expect(store.isAucationAdd).toBe(true);
   });
 
-  it("asyncSetIsAucationChange success", async () => {
-    aucationApi.changeAucation.mockResolvedValue("ok");
-    const store = useAucationsStore();
-    await store.asyncSetIsAucationChange(1, {});
-    expect(store.isAucationChanged).toBe(true);
-  });
+  const actionCases = [
+    {
+      action: "asyncSetIsAucationChange",
+      api: "changeAucation",
+      args: [1, { title: "t" }],
+      defaultMessage: "Lelang berhasil diperbarui!",
+      okFlag: "isAucationChanged",
+      doneFlag: "isAucationChange",
+    },
+    {
+      action: "asyncSetIsAucationChangeCover",
+      api: "changeAucationCover",
+      args: [1, new File([], "a.jpg")],
+      defaultMessage: "Cover berhasil diperbarui!",
+      okFlag: "isAucationChangedCover",
+      doneFlag: "isAucationChangeCover",
+    },
+    {
+      action: "asyncSetIsAucationDelete",
+      api: "deleteAucation",
+      args: [1],
+      defaultMessage: "Lelang berhasil dihapus!",
+      okFlag: "isAucationDeleted",
+      doneFlag: "isAucationDelete",
+    },
+    {
+      action: "asyncSetIsBidAdd",
+      api: "addBid",
+      args: [1, 1000],
+      defaultMessage: "Tawaran berhasil diajukan!",
+      okFlag: "isBidAdded",
+      doneFlag: "isBidAdd",
+    },
+    {
+      action: "asyncSetIsBidDelete",
+      api: "deleteBid",
+      args: [1],
+      defaultMessage: "Tawaran berhasil dibatalkan!",
+      okFlag: "isBidDeleted",
+      doneFlag: "isBidDelete",
+    },
+    {
+      action: "asyncSetIsAucationDeleteAll",
+      api: "deleteAllAucations",
+      args: [],
+      defaultMessage: "Semua lelang berhasil dihapus!",
+      okFlag: "isAucationDeletedAll",
+      doneFlag: "isAucationDeleteAll",
+    },
+  ];
 
-  it("asyncSetIsAucationChangeCover success", async () => {
-    aucationApi.changeAucationCover.mockResolvedValue("ok");
-    const store = useAucationsStore();
-    await store.asyncSetIsAucationChangeCover(1, new File([], "a.jpg"));
-    expect(store.isAucationChangedCover).toBe(true);
-  });
+  describe.each(actionCases)(
+    "$action",
+    ({ action, api, args, defaultMessage, okFlag, doneFlag }) => {
+      it("success shows the message returned by the api", async () => {
+        aucationApi[api].mockResolvedValue("pesan dari api");
+        const store = useAucationsStore();
+        await store[action](...args);
+        expect(toolsHelper.showSuccessDialog).toHaveBeenCalledWith("pesan dari api");
+        expect(store[okFlag]).toBe(true);
+        expect(store[doneFlag]).toBe(true);
+      });
 
-  it("asyncSetIsAucationDelete success", async () => {
-    aucationApi.deleteAucation.mockResolvedValue("ok");
-    const store = useAucationsStore();
-    await store.asyncSetIsAucationDelete(1);
-    expect(store.isAucationDeleted).toBe(true);
-  });
+      it("success falls back to the default message", async () => {
+        aucationApi[api].mockResolvedValue(undefined);
+        const store = useAucationsStore();
+        await store[action](...args);
+        expect(toolsHelper.showSuccessDialog).toHaveBeenCalledWith(defaultMessage);
+        expect(store[okFlag]).toBe(true);
+        expect(store[doneFlag]).toBe(true);
+      });
 
-  it("asyncSetIsBidAdd success", async () => {
-    aucationApi.addBid.mockResolvedValue("ok");
-    const store = useAucationsStore();
-    await store.asyncSetIsBidAdd(1, 1000);
-    expect(store.isBidAdded).toBe(true);
-  });
+      it("fail shows an error and keeps the flag false", async () => {
+        aucationApi[api].mockRejectedValue(new Error("gagal"));
+        const store = useAucationsStore();
+        store[okFlag] = true;
+        await store[action](...args);
+        expect(toolsHelper.showErrorDialog).toHaveBeenCalledWith("gagal");
+        expect(toolsHelper.showSuccessDialog).not.toHaveBeenCalled();
+        expect(store[okFlag]).toBe(false);
+        expect(store[doneFlag]).toBe(true);
+      });
+    }
+  );
 
-  it("asyncSetIsBidDelete success", async () => {
-    aucationApi.deleteBid.mockResolvedValue("ok");
+  it("setters update their state", () => {
     const store = useAucationsStore();
-    await store.asyncSetIsBidDelete(1);
-    expect(store.isBidDeleted).toBe(true);
-  });
-
-  it("asyncSetIsAucationDeleteAll success", async () => {
-    aucationApi.deleteAllAucations.mockResolvedValue("ok");
-    const store = useAucationsStore();
-    await store.asyncSetIsAucationDeleteAll();
-    expect(store.isAucationDeletedAll).toBe(true);
+    store.setAucations([{ id: 1 }]);
+    store.setAucation({ id: 2 });
+    expect(store.aucations).toEqual([{ id: 1 }]);
+    expect(store.aucation).toEqual({ id: 2 });
   });
 });

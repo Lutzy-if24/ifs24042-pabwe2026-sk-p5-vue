@@ -3,7 +3,7 @@
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
       <div>
         <h1 class="text-2xl font-bold text-slate-900">Dashboard Lelang</h1>
-        <p class="text-sm text-slate-500 mt-1">Kelola dan ikuti lelang yang tersedia</p>
+        <p class="text-sm text-slate-600 mt-1">Kelola dan ikuti lelang yang tersedia</p>
       </div>
       <div class="flex gap-2">
         <button
@@ -11,7 +11,7 @@
           @click="showAddModal = true"
           class="inline-flex items-center gap-2 px-4 py-2.5 bg-indigo-600 text-white text-sm font-semibold rounded-xl hover:bg-indigo-700 transition shadow-md shadow-indigo-600/20"
         >
-          <Plus :size="18" />
+          <Plus :size="18" aria-hidden="true" />
           Tambah Lelang
         </button>
       </div>
@@ -23,6 +23,7 @@
         v-for="tab in tabs"
         :key="tab.key"
         type="button"
+        :aria-pressed="activeTab === tab.key"
         @click="activeTab = tab.key; loadAucations()"
         class="px-4 py-2 text-sm font-medium rounded-lg transition"
         :class="activeTab === tab.key
@@ -36,21 +37,28 @@
     <!-- Search -->
     <div class="mb-6">
       <input
+        id="search-aucation"
+        name="search"
         v-model="searchQuery"
         type="search"
         placeholder="Cari judul atau deskripsi lelang..."
+        aria-label="Cari judul atau deskripsi lelang"
         class="w-full max-w-md px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500"
       />
     </div>
 
     <!-- Loading -->
-    <div v-if="loading" class="flex justify-center py-16">
-      <div class="w-10 h-10 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+    <div v-if="loading" role="status" class="flex justify-center py-16">
+      <div
+        class="w-10 h-10 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"
+        aria-hidden="true"
+      />
+      <span class="sr-only">Memuat lelang...</span>
     </div>
 
     <!-- Empty -->
     <div v-else-if="filteredAucations.length === 0" class="text-center py-16">
-      <p class="text-slate-500">Belum ada lelang yang ditampilkan.</p>
+      <p class="text-slate-600">Belum ada lelang yang ditampilkan.</p>
     </div>
 
     <!-- Grid -->
@@ -66,23 +74,24 @@
             v-if="item.cover"
             :src="item.cover"
             :alt="item.title"
+            loading="lazy"
             class="w-full h-full object-cover group-hover:scale-105 transition duration-300"
           />
           <div v-else class="w-full h-full flex items-center justify-center text-slate-300">
-            <ImageIcon :size="48" />
+            <ImageIcon :size="48" aria-hidden="true" />
           </div>
           <span
             class="absolute top-3 right-3 px-2.5 py-1 text-xs font-semibold rounded-full"
             :class="item.closed_at && new Date(item.closed_at) < new Date()
               ? 'bg-slate-800 text-white'
-              : 'bg-emerald-500 text-white'"
+              : 'bg-emerald-700 text-white'"
           >
             {{ item.closed_at && new Date(item.closed_at) < new Date() ? 'Ditutup' : 'Berlangsung' }}
           </span>
         </div>
         <div class="p-4">
-          <h3 class="font-semibold text-slate-900 line-clamp-1">{{ item.title }}</h3>
-          <p class="text-sm text-slate-500 mt-1">
+          <h2 class="font-semibold text-slate-900 line-clamp-1">{{ item.title }}</h2>
+          <p class="text-sm text-slate-600 mt-1">
             Harga awal: {{ formatRupiah(item.start_bid) }}
           </p>
           <p class="text-sm text-indigo-600 font-medium mt-1">

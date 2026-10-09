@@ -1,6 +1,6 @@
 <template>
   <div v-if="!profile" class="flex flex-col items-center justify-center py-24">
-    <Loader2 :size="36" class="text-indigo-600 animate-spin mb-2" />
+    <Loader2 :size="36" class="text-indigo-600 animate-spin mb-2" aria-hidden="true" />
     <p class="text-sm font-medium text-slate-600">Memuat data profil...</p>
   </div>
 
@@ -9,7 +9,7 @@
       <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
         Profil Akun
       </h1>
-      <p class="text-sm text-slate-500 mt-1">
+      <p class="text-sm text-slate-600 mt-1">
         Kelola informasi identitas, foto profil, dan keamanan akun Anda.
       </p>
     </div>
@@ -31,16 +31,20 @@
         </div>
 
         <label
+          for="profile-photo"
           data-testid="upload-profile-photo-btn"
           class="absolute bottom-0 right-0 p-2 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white shadow-md cursor-pointer transition-transform hover:scale-105"
           title="Ubah Foto Profil"
         >
-          <Loader2 v-if="loadingPhoto" :size="16" class="animate-spin" />
-          <Camera v-else :size="16" />
+          <Loader2 v-if="loadingPhoto" :size="16" class="animate-spin" aria-hidden="true" />
+          <Camera v-else :size="16" aria-hidden="true" />
           <input
+            id="profile-photo"
+            name="photo"
             type="file"
             data-testid="profile-photo-file-input"
             accept="image/*"
+            aria-label="Ubah foto profil"
             @change="handlePhotoUpload"
             class="hidden"
           />
@@ -49,10 +53,10 @@
 
       <div class="text-center sm:text-left space-y-1">
         <h2 class="text-xl font-bold text-slate-800">{{ profile.name }}</h2>
-        <p class="text-sm text-slate-500">{{ profile.email }}</p>
+        <p class="text-sm text-slate-600">{{ profile.email }}</p>
         <div class="pt-2">
           <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200/60">
-            <Check :size="14" /> Terverifikasi
+            <Check :size="14" aria-hidden="true" /> Terverifikasi
           </span>
         </div>
       </div>
@@ -63,18 +67,24 @@
       <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-xs space-y-5">
         <div class="flex items-center gap-2.5 pb-2 border-b border-slate-100">
           <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
-            <User :size="18" />
+            <User :size="18" aria-hidden="true" />
           </div>
           <h3 class="font-bold text-slate-800">Ubah Biodata</h3>
         </div>
 
         <form @submit.prevent="handleUpdateProfile" class="space-y-4">
           <div>
-            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">
+            <label
+              for="profile-name"
+              class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5"
+            >
               Nama Lengkap
             </label>
             <input
+              id="profile-name"
+              name="name"
               type="text"
+              autocomplete="name"
               data-testid="profile-name-input"
               v-model="name"
               class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition-all"
@@ -83,11 +93,17 @@
           </div>
 
           <div>
-            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">
+            <label
+              for="profile-email"
+              class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5"
+            >
               Alamat Email
             </label>
             <input
+              id="profile-email"
+              name="email"
               type="email"
+              autocomplete="email"
               data-testid="profile-email-input"
               v-model="email"
               class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition-all"
@@ -103,7 +119,7 @@
               class="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 rounded-xl shadow-md shadow-indigo-600/25 transition-all disabled:opacity-60"
             >
               <template v-if="loadingProfile">
-                <Loader2 :size="18" class="animate-spin" />
+                <Loader2 :size="18" class="animate-spin" aria-hidden="true" />
                 <span>Menyimpan Perubahan...</span>
               </template>
               <span v-else>Simpan Perubahan</span>
@@ -116,18 +132,24 @@
       <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-xs space-y-5">
         <div class="flex items-center gap-2.5 pb-2 border-b border-slate-100">
           <div class="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
-            <ShieldCheck :size="18" />
+            <ShieldCheck :size="18" aria-hidden="true" />
           </div>
           <h3 class="font-bold text-slate-800">Keamanan & Password</h3>
         </div>
 
         <form @submit.prevent="handleUpdatePassword" class="space-y-4">
           <div>
-            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">
+            <label
+              for="current-password"
+              class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5"
+            >
               Kata Sandi Saat Ini
             </label>
             <input
+              id="current-password"
+              name="current_password"
               type="password"
+              autocomplete="current-password"
               data-testid="current-password-input"
               v-model="oldPassword"
               placeholder="••••••"
@@ -137,11 +159,17 @@
           </div>
 
           <div>
-            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">
+            <label
+              for="new-password"
+              class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5"
+            >
               Kata Sandi Baru
             </label>
             <input
+              id="new-password"
+              name="new_password"
               type="password"
+              autocomplete="new-password"
               data-testid="new-password-input"
               v-model="newPassword"
               placeholder="Minimal 6 karakter"
@@ -151,11 +179,17 @@
           </div>
 
           <div>
-            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">
+            <label
+              for="confirm-password"
+              class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5"
+            >
               Ulangi Kata Sandi Baru
             </label>
             <input
+              id="confirm-password"
+              name="new_password_confirmation"
               type="password"
+              autocomplete="new-password"
               data-testid="confirm-password-input"
               v-model="newPasswordConfirmation"
               placeholder="Konfirmasi kata sandi"
@@ -172,7 +206,7 @@
               class="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-slate-900 hover:bg-slate-800 active:bg-slate-950 rounded-xl shadow-md transition-all disabled:opacity-60"
             >
               <template v-if="loadingPassword">
-                <Loader2 :size="18" class="animate-spin" />
+                <Loader2 :size="18" class="animate-spin" aria-hidden="true" />
                 <span>Memperbarui Password...</span>
               </template>
               <span v-else>Perbarui Password</span>
