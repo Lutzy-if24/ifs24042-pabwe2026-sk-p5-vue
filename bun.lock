@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "ifs24042-pabwe2026-latihan-p5-vue",
+      "name": "ifs24042-pabwe2026-sk-p5-vue",
       "dependencies": {
         "@toast-ui/editor": "^3.2.2",
         "clsx": "^2.1.1",
