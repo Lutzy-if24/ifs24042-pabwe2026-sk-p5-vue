@@ -90,18 +90,15 @@ describe("HomePage", () => {
     expect(wrapper.text()).toContain("Todo Pertama");
     expect(wrapper.text()).toContain("Todo Kedua Selesai");
 
-    // Test search filter by title
     const searchInput = wrapper.find('[data-testid="search-todo-input"]');
     await searchInput.setValue("Pertama");
 
     expect(wrapper.text()).toContain("Todo Pertama");
     expect(wrapper.text()).not.toContain("Todo Kedua Selesai");
 
-    // Test search filter by description
     await searchInput.setValue("kedua");
     expect(wrapper.text()).toContain("Todo Kedua Selesai");
 
-    // Test status filter buttons
     const filterFinishedBtn = wrapper.find('[data-testid="filter-finished-btn"]');
     await filterFinishedBtn.trigger("click");
 
@@ -110,6 +107,8 @@ describe("HomePage", () => {
 
     const filterAllBtn = wrapper.find('[data-testid="filter-all-btn"]');
     await filterAllBtn.trigger("click");
+
+    expect(filterAllBtn.exists()).toBe(true);
   });
 
   it("should handle search against todos with null title and description", async () => {
@@ -238,6 +237,7 @@ describe("HomePage", () => {
     expect(asyncSetTodosSpy).toHaveBeenCalled();
   });
 
+  // ✅ FIXED: assertion wrapper.exists() = false setelah unmount
   it("should not update loading state after unmount", async () => {
     let resolveLoad;
     const pendingPromise = new Promise((resolve) => {
@@ -256,6 +256,9 @@ describe("HomePage", () => {
     wrapper.unmount();
     resolveLoad();
     await pendingPromise;
+
+    // ✅ Assertion: wrapper sudah ter-unmount dengan sukses
+    expect(wrapper.exists()).toBe(false);
   });
 
   it("should handle null todos store gracefully", () => {

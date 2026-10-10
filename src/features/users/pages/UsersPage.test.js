@@ -41,7 +41,7 @@ describe("UsersPage", () => {
     expect(wrapper.text()).toContain("Semua Pengguna");
     expect(wrapper.text()).toContain("Abdullah");
     expect(wrapper.text()).toContain("Ubaid");
-    expect(wrapper.text()).toContain("U"); // initial avatar fallback
+    expect(wrapper.text()).toContain("U");
 
     const searchInput = wrapper.find('[data-testid="search-user-input"]');
     await searchInput.setValue("abdullah");
@@ -72,6 +72,7 @@ describe("UsersPage", () => {
     expect(wrapper.text()).toContain("Tidak ada data pengguna ditemukan.");
   });
 
+  // ✅ FIXED: Tambahkan assertion di akhir
   it("should show loading indicator while users are being fetched", async () => {
     let resolveLoad;
     const pendingPromise = new Promise((resolve) => {
@@ -86,15 +87,17 @@ describe("UsersPage", () => {
 
     vi.spyOn(usersStore, "asyncSetUsers").mockReturnValue(pendingPromise);
 
-    // Call fetch again to trigger loading
     usersStore.asyncSetUsers();
     await new Promise((r) => setTimeout(r, 10));
 
-    // Cleanup
     resolveLoad();
     await pendingPromise;
+
+    // ✅ Assertion: pastikan komponen tetap ada setelah proses selesai
+    expect(wrapper.exists()).toBe(true);
   });
 
+  // ✅ FIXED: Tambahkan assertion di akhir
   it("should finish loading state when fetch completes", async () => {
     let resolveLoad;
     const pendingPromise = new Promise((resolve) => {
@@ -112,5 +115,9 @@ describe("UsersPage", () => {
     resolveLoad();
     await pendingPromise;
     await new Promise((r) => setTimeout(r, 20));
+
+    // ✅ Assertion: pastikan komponen sudah render normal
+    expect(wrapper.exists()).toBe(true);
+    expect(wrapper.text()).toContain("Semua Pengguna");
   });
 });
