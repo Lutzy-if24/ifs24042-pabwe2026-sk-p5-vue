@@ -161,13 +161,13 @@ async function handleSave() {
   loading.value = false;
 }
 
-// ✅ Isi form dari props.todo (prioritas) atau store.isTodo (fallback)
+// ✅ Isi form dari props.item (prioritas) atau store.isItem (fallback)
 watch(
   () => [props.show, props.todoId, props.todo, todosStore.isTodo],
   ([show, todoId, todoProp, todoStore]) => {
     if (!show) return;
 
-    // Prioritas: props.todo → store.isTodo
+    // Prioritas: props.item → store.isItem
     const data = todoProp || (todoStore && String(todoStore.id) === String(todoId) ? todoStore : null);
 
     if (data) {
