@@ -17,7 +17,7 @@
   </main>
 
   <div v-else class="min-h-screen bg-slate-50 text-slate-800">
-    <header>
+    <header role="none">
       <NavbarComponent
         :profile="usersStore.profile"
         :is-sidebar-open="isSidebarOpen"
@@ -26,7 +26,7 @@
       />
     </header>
 
-    <aside>
+    <aside role="none">
       <SidebarComponent
         :is-sidebar-open="isSidebarOpen"
         @close-mobile="isSidebarOpen = false"
@@ -73,6 +73,7 @@ watch(
       if (!profile) {
         apiHelper.putAccessToken("");
         router.push("/auth/login");
+        
       }
     }
   }
