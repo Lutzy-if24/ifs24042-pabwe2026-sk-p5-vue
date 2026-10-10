@@ -89,3 +89,76 @@
     </form>
   </div>
 </template>
+
+<script setup>
+import { ref, watch } from "vue";
+import { Plus, X, Loader2 } from "lucide-vue-next";
+import { useTodosStore } from "../states/todosStore";
+import { showErrorDialog } from "../../../helpers/toolsHelper";
+import MarkdownEditor from "../components/MarkdownEditor.vue";
+
+// ✅ Props yang membuat v-if="show" bekerja
+const props = defineProps({
+  show: {
+    type: Boolean,
+    default: false,
+  },
+});
+
+// ✅ Emit untuk memberitahu parent saat modal ditutup
+const emit = defineEmits(["close"]);
+
+const todosStore = useTodosStore();
+
+const title = ref("");
+const description = ref("");
+const loading = ref(false);
+
+function onClose() {
+  emit("close");
+}
+
+async function handleSave() {
+  // Validasi
+  if (!title.value || !title.value.trim()) {
+    showErrorDialog("Judul tidak boleh kosong");
+    return;
+  }
+  if (!description.value || !description.value.trim()) {
+    showErrorDialog("Deskripsi tidak boleh kosong");
+    return;
+  }
+
+  loading.value = true;
+  await todosStore.asyncSetIsTodoAdd(title.value.trim(), description.value.trim());
+  loading.value = false;
+}
+
+// Reset form saat modal dibuka
+watch(
+  () => props.show,
+  (newShow) => {
+    if (newShow) {
+      title.value = "";
+      description.value = "";
+      loading.value = false;
+    }
+  }
+);
+
+// Handle response dari store
+watch(
+  () => [todosStore.isTodoAdd, todosStore.isTodoAdded],
+  ([isTodoAdd, isTodoAdded]) => {
+    if (isTodoAdd) {
+      todosStore.setIsTodoAdd(false);
+      loading.value = false;
+      if (isTodoAdded) {
+        todosStore.setIsTodoAdded(false);
+        todosStore.asyncSetTodos();
+        onClose();
+      }
+    }
+  }
+);
+</script>

@@ -105,3 +105,95 @@
     </form>
   </div>
 </template>
+
+<script setup>
+import { ref, watch } from "vue";
+import { Edit3, X, Loader2 } from "lucide-vue-next";
+import { useTodosStore } from "../states/todosStore";
+import { showErrorDialog } from "../../../helpers/toolsHelper";
+import MarkdownEditor from "../components/MarkdownEditor.vue";
+
+// ✅ Props: show, todoId, todo (langsung dari parent)
+const props = defineProps({
+  show: {
+    type: Boolean,
+    default: false,
+  },
+  todoId: {
+    type: [Number, String],
+    default: null,
+  },
+  todo: {
+    type: Object,
+    default: null,
+  },
+});
+
+const emit = defineEmits(["close"]);
+const todosStore = useTodosStore();
+
+const title = ref("");
+const description = ref("");
+const isFinished = ref(0);
+const loading = ref(false);
+
+function onClose() {
+  emit("close");
+}
+
+async function handleSave() {
+  if (!title.value || !title.value.trim()) {
+    showErrorDialog("Judul tidak boleh kosong");
+    return;
+  }
+  if (!description.value || !description.value.trim()) {
+    showErrorDialog("Deskripsi tidak boleh kosong");
+    return;
+  }
+
+  loading.value = true;
+  await todosStore.asyncSetIsTodoChange(
+    props.todoId,
+    title.value.trim(),
+    description.value.trim(),
+    Number(isFinished.value)
+  );
+  loading.value = false;
+}
+
+// ✅ Isi form dari props.todo (prioritas) atau store.isTodo (fallback)
+watch(
+  () => [props.show, props.todoId, props.todo, todosStore.isTodo],
+  ([show, todoId, todoProp, todoStore]) => {
+    if (!show) return;
+
+    // Prioritas: props.todo → store.isTodo
+    const data = todoProp || (todoStore && String(todoStore.id) === String(todoId) ? todoStore : null);
+
+    if (data) {
+      title.value = data.title || "";
+      description.value = data.description || "";
+      isFinished.value = Number(data.is_finished) || 0;
+    }
+  },
+  { immediate: true }
+);
+
+// Handle setelah save berhasil
+watch(
+  () => [todosStore.isTodoChange, todosStore.isTodoChanged],
+  ([isTodoChange, isTodoChanged]) => {
+    if (isTodoChange) {
+      todosStore.setIsTodoChange(false);
+      loading.value = false;
+      if (isTodoChanged) {
+        todosStore.setIsTodoChanged(false);
+        if (props.todoId) {
+          todosStore.asyncSetTodo(props.todoId);
+        }
+        onClose();
+      }
+    }
+  }
+);
+</script>
