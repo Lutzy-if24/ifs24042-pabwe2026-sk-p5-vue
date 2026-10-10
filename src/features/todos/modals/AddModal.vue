@@ -29,10 +29,11 @@
     <form @submit.prevent="handleSave" class="flex-1 flex flex-col min-h-0 bg-white">
       <div class="flex-1 flex flex-col min-h-0 p-6 md:p-8 space-y-4 w-full">
         <div class="shrink-0">
-          <label class="block text-sm font-semibold text-slate-700 mb-1.5">
+          <label for="add-todo-title" class="block text-sm font-semibold text-slate-700 mb-1.5">
             Judul Todo <span class="text-red-500">*</span>
           </label>
           <input
+            id="add-todo-title"
             type="text"
             data-testid="add-todo-title-input"
             v-model="title"
@@ -43,11 +44,12 @@
         </div>
 
         <div class="flex-1 flex flex-col min-h-0">
-          <label class="block text-sm font-semibold text-slate-700 mb-1.5 shrink-0">
+          <label for="add-todo-description" class="block text-sm font-semibold text-slate-700 mb-1.5 shrink-0">
             Deskripsi (Markdown) <span class="text-red-500">*</span>
           </label>
           <div class="flex-1 min-h-[300px]">
             <MarkdownEditor
+              id="add-todo-description"
               v-model="description"
               placeholder="Tuliskan rincian tugas yang perlu diselesaikan dalam format Markdown..."
               height="100%"
@@ -87,73 +89,3 @@
     </form>
   </div>
 </template>
-
-<script setup>
-import { ref, watch } from "vue";
-import { Plus, X, Loader2 } from "lucide-vue-next";
-import { useTodosStore } from "../states/todosStore";
-import { showErrorDialog } from "../../../helpers/toolsHelper";
-import MarkdownEditor from "../components/MarkdownEditor.vue";
-
-const props = defineProps({
-  show: {
-    type: Boolean,
-    default: false,
-  },
-});
-
-const emit = defineEmits(["close"]);
-
-const todosStore = useTodosStore();
-
-const loading = ref(false);
-const title = ref("");
-const description = ref("");
-
-function onClose() {
-  emit("close");
-}
-
-watch(
-  () => props.show,
-  (newShow) => {
-    if (newShow) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "auto";
-    }
-  }
-);
-
-watch(
-  () => [todosStore.isTodoAdd, todosStore.isTodoAdded],
-  ([isTodoAdd, isTodoAdded]) => {
-    if (isTodoAdd) {
-      loading.value = false;
-      todosStore.setIsTodoAdd(false);
-      if (isTodoAdded) {
-        todosStore.setIsTodoAdded(false);
-        todosStore.asyncSetTodos();
-        title.value = "";
-        description.value = "";
-        onClose();
-      }
-    }
-  }
-);
-
-function handleSave() {
-  if (!title.value.trim()) {
-    showErrorDialog("Judul tidak boleh kosong");
-    return;
-  }
-
-  if (!description.value.trim()) {
-    showErrorDialog("Deskripsi tidak boleh kosong");
-    return;
-  }
-
-  loading.value = true;
-  todosStore.asyncSetIsTodoAdd(title.value.trim(), description.value.trim());
-}
-</script>

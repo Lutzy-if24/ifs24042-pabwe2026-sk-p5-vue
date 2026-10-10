@@ -78,5 +78,5 @@ export function formatRupiah(angka) {
     return "Rp 0";
   }
   const number = Math.floor(Number(angka));
-  return `Rp ${number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
+  return `Rp ${number.toString().replaceAll(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
 }

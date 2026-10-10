@@ -1,4 +1,4 @@
-# ifs24042-pabwe2026-latihan-p5-vue
+# ifs24042-pabwe2026-sk-p5-vue
 
 To install dependencies:
 

@@ -27,9 +27,10 @@
 
       <form @submit.prevent="handleSave" class="p-6 space-y-4">
         <div>
-          <label class="block text-sm font-semibold text-slate-700 mb-2">
+          <!-- ✅ FIX: ganti <label> jadi <p> karena ini judul visual, bukan label input -->
+          <p class="block text-sm font-semibold text-slate-700 mb-2">
             Pilih Gambar Cover
-          </label>
+          </p>
           <label class="flex flex-col items-center justify-center w-full h-44 border-2 border-dashed border-slate-300 hover:border-indigo-500 rounded-2xl cursor-pointer bg-slate-50/50 hover:bg-indigo-50/20 transition-all overflow-hidden relative">
             <img
               v-if="previewUrl"

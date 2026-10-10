@@ -18,7 +18,7 @@
   </main>
 
   <div v-else class="min-h-screen bg-slate-50 text-slate-800">
-    <header role="none">
+    <header role="presentation">
       <NavbarComponent
         :profile="usersStore.profile"
         :is-sidebar-open="isSidebarOpen"
@@ -27,7 +27,7 @@
       />
     </header>
 
-    <aside role="none">
+    <aside role="presentation">
       <SidebarComponent
         :is-sidebar-open="isSidebarOpen"
         @close-mobile="isSidebarOpen = false"
