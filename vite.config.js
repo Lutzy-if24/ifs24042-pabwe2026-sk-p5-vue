@@ -27,6 +27,10 @@ export default defineConfig(({ mode }) => {
       globals: true,
       environment: "jsdom",
       setupFiles: "./src/setupTests.js",
+      // Beberapa tes memuat editor Toast UI & route lazy sehingga bisa lambat
+      // saat banyak berkas jalan paralel (lokal/Jenkins)
+      testTimeout: 30000,
+      hookTimeout: 30000,
       coverage: {
         provider: "v8",
         reporter: ["text", "json", "html", "lcov"],

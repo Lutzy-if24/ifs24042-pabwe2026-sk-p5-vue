@@ -8,15 +8,17 @@ import { useAucationsStore } from "../states/aucationsStore";
 import { AUCATION_OPEN, AUCATION_CLOSED } from "../api/aucationApi";
 import { formatRupiah } from "../../../helpers/toolsHelper";
 
-const AddModalStub = defineComponent({
-  name: "AddModal",
-  emits: ["close", "success"],
-  setup(_, { emit }) {
+// Editor markdown berat; di tes cukup diganti textarea sederhana
+const MarkdownEditorStub = defineComponent({
+  name: "MarkdownEditor",
+  props: ["modelValue"],
+  emits: ["update:modelValue"],
+  setup(props, { emit }) {
     return () =>
-      h("div", { "data-testid": "add-modal" }, [
-        h("button", { "data-testid": "stub-close", onClick: () => emit("close") }, "close"),
-        h("button", { "data-testid": "stub-success", onClick: () => emit("success") }, "ok"),
-      ]);
+      h("textarea", {
+        value: props.modelValue,
+        onInput: (e) => emit("update:modelValue", e.target.value),
+      });
   },
 });
 
@@ -66,7 +68,10 @@ async function mountPage(aucations = sampleAucations, loadImpl = () => Promise.r
   });
 
   const wrapper = mount(HomePage, {
-    global: { plugins: [pinia, router], stubs: { AddModal: AddModalStub } },
+    global: {
+      plugins: [pinia, router],
+      stubs: { MarkdownEditor: MarkdownEditorStub },
+    },
   });
   await flushPromises();
 
@@ -75,6 +80,13 @@ async function mountPage(aucations = sampleAucations, loadImpl = () => Promise.r
 
 const findButton = (wrapper, text) =>
   wrapper.findAll("button").find((b) => b.text() === text);
+
+// AddModal dimuat lazy (defineAsyncComponent), jadi tunggu import selesai
+async function openAddModal(wrapper) {
+  await findButton(wrapper, "Tambah Lelang").trigger("click");
+  await vi.dynamicImportSettled();
+  await flushPromises();
+}
 
 describe("HomePage (aucations)", () => {
   beforeEach(() => {
@@ -182,24 +194,27 @@ describe("HomePage (aucations)", () => {
 
   it("should open and close AddModal", async () => {
     const { wrapper } = await mountPage();
-    expect(wrapper.find('[data-testid="add-modal"]').exists()).toBe(false);
+    expect(wrapper.find('[role="dialog"]').exists()).toBe(false);
 
-    await findButton(wrapper, "Tambah Lelang").trigger("click");
-    expect(wrapper.find('[data-testid="add-modal"]').exists()).toBe(true);
+    await openAddModal(wrapper);
+    expect(wrapper.find('[role="dialog"]').exists()).toBe(true);
 
-    await wrapper.find('[data-testid="stub-close"]').trigger("click");
-    expect(wrapper.find('[data-testid="add-modal"]').exists()).toBe(false);
+    await wrapper.find('button[aria-label="Tutup"]').trigger("click");
+    expect(wrapper.find('[role="dialog"]').exists()).toBe(false);
   });
 
   it("should close AddModal and reload when aucation is added", async () => {
-    const { wrapper, loadSpy } = await mountPage();
+    const { wrapper, store, loadSpy } = await mountPage();
     expect(loadSpy).toHaveBeenCalledTimes(1);
 
-    await findButton(wrapper, "Tambah Lelang").trigger("click");
-    await wrapper.find('[data-testid="stub-success"]').trigger("click");
+    await openAddModal(wrapper);
+    expect(wrapper.find('[role="dialog"]').exists()).toBe(true);
+
+    store.isAucationAdded = true;
+    store.setIsAucationAdd(true);
     await flushPromises();
 
-    expect(wrapper.find('[data-testid="add-modal"]').exists()).toBe(false);
+    expect(wrapper.find('[role="dialog"]').exists()).toBe(false);
     expect(loadSpy).toHaveBeenCalledTimes(2);
   });
 });

@@ -106,13 +106,15 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, defineAsyncComponent } from "vue";
 import { RouterLink } from "vue-router";
 import { Plus, Image as ImageIcon } from "lucide-vue-next";
 import { useAucationsStore } from "../states/aucationsStore";
 import { formatRupiah } from "../../../helpers/toolsHelper";
 import { AUCATION_OPEN, AUCATION_CLOSED } from "../api/aucationApi";
-import AddModal from "../modals/AddModal.vue";
+
+// Modal (beserta editor markdown) hanya diunduh saat dibuka
+const AddModal = defineAsyncComponent(() => import("../modals/AddModal.vue"));
 
 const store = useAucationsStore();
 const loading = ref(true);
