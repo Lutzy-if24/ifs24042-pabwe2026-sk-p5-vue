@@ -1,11 +1,12 @@
 <template>
   <div>
     <div v-if="!store.isAucation" class="flex justify-center py-20">
+      <h1 class="sr-only">Memuat detail lelang</h1>
       <div class="w-10 h-10 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin" />
     </div>
 
     <div v-else-if="!store.aucation" class="text-center py-20">
-      <p class="text-slate-500">Lelang tidak ditemukan.</p>
+      <h1 class="text-slate-600">Lelang tidak ditemukan.</h1>
       <RouterLink to="/" class="text-indigo-600 font-medium mt-2 inline-block">Kembali ke Dashboard</RouterLink>
     </div>
 
@@ -23,7 +24,7 @@
           <template v-if="isOwner">
             <button type="button" @click="showChangeModal = true" class="px-3 py-2 text-sm font-medium bg-white border border-slate-200 rounded-lg hover:bg-slate-50">Ubah</button>
             <button type="button" @click="showCoverModal = true" class="px-3 py-2 text-sm font-medium bg-white border border-slate-200 rounded-lg hover:bg-slate-50">Ganti Cover</button>
-            <button type="button" @click="handleDelete" class="px-3 py-2 text-sm font-medium bg-red-50 text-red-600 border border-red-200 rounded-lg hover:bg-red-100">Hapus</button>
+            <button type="button" @click="handleDelete" class="px-3 py-2 text-sm font-medium bg-red-50 text-red-700 border border-red-200 rounded-lg hover:bg-red-100">Hapus</button>
           </template>
           <template v-else>
             <button
@@ -54,7 +55,7 @@
           :alt="store.aucation.title"
           class="w-full h-full object-cover"
         />
-        <div v-else class="w-full h-full flex items-center justify-center text-slate-300">
+        <div v-else class="w-full h-full flex items-center justify-center text-slate-600">
           Tidak ada cover
         </div>
       </div>
@@ -91,7 +92,7 @@
           <li v-for="(b, idx) in bids" :key="idx" class="py-3 flex justify-between items-center">
             <div>
               <p class="text-sm font-medium text-slate-800">{{ b.name || b.user?.name || 'Pengguna' }}</p>
-              <p class="text-xs text-slate-400">{{ formatDate(b.created_at) }}</p>
+              <p class="text-xs text-slate-600">{{ formatDate(b.created_at) }}</p>
             </div>
             <p class="font-semibold text-indigo-600">{{ formatRupiah(b.bid) }}</p>
           </li>

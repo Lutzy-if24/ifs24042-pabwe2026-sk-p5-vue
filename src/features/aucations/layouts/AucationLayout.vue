@@ -3,6 +3,7 @@
     v-if="!usersStore.profile"
     class="min-h-screen flex items-center justify-center bg-slate-50"
   >
+    <h1 class="sr-only">Memuat aplikasi lelang</h1>
     <div
       role="status"
       aria-live="polite"
@@ -73,7 +74,6 @@ watch(
       if (!profile) {
         apiHelper.putAccessToken("");
         router.push("/auth/login");
-        
       }
     }
   }
